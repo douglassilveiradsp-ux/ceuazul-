@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Douglas - Pesquisador de Jogos">
+<title>Teste de Área das Figuras Planas - 100 Questões</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#eef3fb;color:#1b2a41}
+.wrap{max-width:760px;margin:0 auto;padding:16px}
+h1{text-align:center;font-size:1.5rem;margin:8px 0}
+.autor{text-align:center;font-size:.85rem;color:#555;margin-bottom:12px}
+.formulas{background:#fff;border:3px solid #d00000;border-radius:12px;padding:10px 14px;margin-bottom:14px}
+.formulas h2{margin:0 0 6px;font-size:1rem;color:#d00000}
+.formulas ul{margin:0;padding-left:18px;columns:2;color:#d00000;font-weight:bold;font-size:.95rem}
+.formulas li{margin:3px 0}
+.topo{display:flex;justify-content:space-between;font-weight:bold;margin-bottom:6px}
+.barra{height:10px;background:#cfd8e8;border-radius:6px;overflow:hidden;margin-bottom:14px}
+.barra div{height:100%;width:0;background:#2e7d32;transition:width .3s}
+.card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.tipo{font-size:.8rem;color:#555;text-transform:uppercase;letter-spacing:.05em}
+.pergunta{font-size:1.2rem;margin:8px 0 12px;line-height:1.4}
+.destaque{background:#ffe5e5;border-left:6px solid #d00000;color:#d00000;font-weight:bold;padding:8px 12px;border-radius:6px;margin-bottom:12px}
+.op{display:block;width:100%;text-align:left;margin:8px 0;padding:12px 14px;font-size:1.05rem;border:2px solid #9bb0d3;background:#f7faff;border-radius:10px;cursor:pointer}
+.op:hover:not(:disabled){background:#e3edff}
+.op.certa{background:#c8f7c5;border-color:#2e7d32}
+.op.errada{background:#ffd0d0;border-color:#d00000}
+.msg{min-height:26px;margin-top:10px;font-weight:bold}
+button.prox,button.reiniciar{margin-top:10px;padding:12px 22px;font-size:1rem;border:0;border-radius:10px;background:#1565c0;color:#fff;cursor:pointer}
+.fim{text-align:center}
+.fim .nota{font-size:2.2rem;font-weight:bold;color:#1565c0}
+.linha{display:flex;gap:12px;align-items:flex-end}
+.linha .card{flex:1;min-width:0}
+#cao{width:96px;text-align:center;user-select:none;flex-shrink:0}
+#cao svg{display:block;width:90px;height:auto;margin:0 auto;overflow:visible}
+#cao .braco-e{transform-origin:29px 70px;transform:rotate(8deg);transition:transform .3s}
+#cao .braco-d{transform-origin:71px 70px;transform:rotate(-8deg);transition:transform .3s}
+#cao.erro .braco-e{transform:rotate(176deg)}
+#cao.erro .braco-d{transform:rotate(-176deg)}
+#cao .rabo{transform-origin:70px 100px}
+#cao .lingua{opacity:0}
+#cao .sombra{width:60px;height:10px;background:rgba(0,0,0,.18);border-radius:50%;margin:2px auto 0}
+#cao.pula svg{animation:pulo .45s ease-in-out 4}
+#cao.pula .braco-e{transform:rotate(145deg)}
+#cao.pula .braco-d{transform:rotate(-145deg)}
+#cao.pula .rabo{animation:rabo .15s ease-in-out 13 alternate}
+#cao.pula .lingua{opacity:1}
+@keyframes rabo{from{transform:rotate(-15deg)}to{transform:rotate(20deg)}}
+@keyframes pulo{0%,100%{transform:translateY(0)}50%{transform:translateY(-45px)}}
+@media(max-width:520px){#cao{width:64px}#cao svg{width:62px}#cao .sombra{width:40px}}
+.oculto{display:none}
+@media(max-width:520px){.formulas ul{columns:1}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📐 Teste de Área das Figuras Planas</h1>
+  <div class="autor">100 questões • Jogo criado por Douglas, pesquisador de jogos</div>
+ 
+  <div class="formulas">
+    <h2>FÓRMULAS (sempre à vista)</h2>
+    <ul>
+      <li>Quadrado: A = l × l</li>
+      <li>Retângulo: A = b × h</li>
+      <li>Triângulo: A = (b × h) ÷ 2</li>
+      <li>Trapézio: A = (B + b) × h ÷ 2</li>
+      <li>Losango: A = (D × d) ÷ 2</li>
+    </ul>
+  </div>
+ 
+  <div id="jogo">
+    <div class="topo"><span id="num">Questão 1/100</span><span id="pts">Pontos: 0</span></div>
+    <div class="barra"><div id="prog"></div></div>
+    <div class="linha">
+    <div class="card">
+      <div class="tipo" id="tipo"></div>
+      <div class="pergunta" id="pergunta"></div>
+      <div class="destaque" id="dica"></div>
+      <div id="opcoes"></div>
+      <div class="msg" id="msg"></div>
+      <button class="prox oculto" id="prox">Próxima ➜</button>
+    </div>
+    <div id="cao"><svg viewBox="0 0 100 140" aria-label="Cachorrinho em pé">
+      <path class="rabo" d="M70 102 Q88 98 84 80" stroke="#c68642" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <rect x="35" y="104" width="12" height="26" rx="6" fill="#c68642"/>
+      <rect x="53" y="104" width="12" height="26" rx="6" fill="#c68642"/>
+      <ellipse cx="40" cy="131" rx="10" ry="5" fill="#6d4c41"/>
+      <ellipse cx="60" cy="131" rx="10" ry="5" fill="#6d4c41"/>
+      <ellipse cx="50" cy="88" rx="23" ry="27" fill="#c68642"/>
+      <ellipse cx="50" cy="93" rx="13" ry="18" fill="#f3d9b1"/>
+      <rect x="35" y="58" width="30" height="7" rx="3.5" fill="#d00000"/>
+      <circle cx="50" cy="69" r="3.2" fill="#f5b400"/>
+      <ellipse cx="28" cy="30" rx="8" ry="15" transform="rotate(20 28 30)" fill="#6d4c41"/>
+      <ellipse cx="72" cy="30" rx="8" ry="15" transform="rotate(-20 72 30)" fill="#6d4c41"/>
+      <circle cx="50" cy="38" r="22" fill="#c68642"/>
+      <ellipse cx="50" cy="46" rx="12" ry="9" fill="#f3d9b1"/>
+      <ellipse cx="50" cy="41" rx="4.5" ry="3.2" fill="#222"/>
+      <circle cx="42" cy="32" r="3.2" fill="#222"/><circle cx="58" cy="32" r="3.2" fill="#222"/>
+      <circle cx="43" cy="31" r="1" fill="#fff"/><circle cx="59" cy="31" r="1" fill="#fff"/>
+      <ellipse class="lingua" cx="50" cy="54" rx="3.5" ry="4.5" fill="#ff7a93"/>
+      <path d="M43 48 Q50 56 57 48" stroke="#222" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <g class="braco-e"><path d="M29 70 L15 100" stroke="#c68642" stroke-width="9" stroke-linecap="round"/><circle cx="15" cy="102" r="6.5" fill="#6d4c41"/></g>
+      <g class="braco-d"><path d="M71 70 L85 100" stroke="#c68642" stroke-width="9" stroke-linecap="round"/><circle cx="85" cy="102" r="6.5" fill="#6d4c41"/></g>
+    </svg><div class="sombra"></div></div>
+    </div>
+  </div>
+ 
+  <div id="fim" class="card fim oculto">
+    <h2>Fim de jogo!</h2>
+    <div class="nota" id="nota"></div>
+    <p id="aviso"></p>
+    <button class="reiniciar" onclick="iniciar()">Jogar de novo</button>
+  </div>
+</div>
+ 
+<script>
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const emb=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=rnd(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+ 
+// monta 3 alternativas (A, B, C) com 1 correta
+function montar(tipo,texto,dica,resp,unid,extras){
+  const s=new Set();
+  (extras||[]).forEach(x=>{if(x!==resp&&x>0)s.add(x)});
+  [resp+rnd(1,9),resp+rnd(10,25),Math.max(1,resp-rnd(1,9)),resp*2].forEach(x=>{if(x!==resp&&x>0)s.add(x)});
+  const err=emb([...s]).slice(0,2);
+  const ops=emb([resp,...err]);
+  return {tipo,texto,dica,ops:ops.map(o=>o+(unid||"")),certa:ops.indexOf(resp)};
+}
+ 
+function gerar(){
+  const q=[];
+  const U=" cm²";
+  // 40 questões de área (8 de cada figura)
+  for(let i=0;i<8;i++){
+    let l=rnd(3,15);
+    q.push(montar("Quadrado",`Um quadrado tem lado de ${l} cm. Qual é a sua área?`,"Quadrado: A = l × l",l*l,U,[l*4,l*2]));
+    let b=rnd(4,18),h=rnd(3,12);
+    q.push(montar("Retângulo",`Um retângulo tem base ${b} cm e altura ${h} cm. Qual é a área?`,"Retângulo: A = b × h",b*h,U,[2*(b+h),b+h]));
+    b=2*rnd(2,9);h=rnd(3,14);
+    q.push(montar("Triângulo",`Um triângulo tem base ${b} cm e altura ${h} cm. Qual é a área?`,"Triângulo: A = (b × h) ÷ 2",b*h/2,U,[b*h,b+h]));
+    let B=rnd(8,16),bm=rnd(3,7);h=2*rnd(2,6);
+    q.push(montar("Trapézio",`Um trapézio tem base maior ${B} cm, base menor ${bm} cm e altura ${h} cm. Qual é a área?`,"Trapézio: A = (B + b) × h ÷ 2",(B+bm)*h/2,U,[(B+bm)*h,B*bm*h/2]));
+    let D=2*rnd(4,12),d=rnd(3,10);
+    q.push(montar("Losango",`Um losango tem diagonal maior ${D} cm e diagonal menor ${d} cm. Qual é a área?`,"Losango: A = (D × d) ÷ 2",D*d/2,U,[D*d,D+d]));
+  }
+  // 20 divisões com dividendo de 3 dígitos
+  for(let i=0;i<20;i++){
+    const dv=rnd(2,9),qt=rnd(Math.ceil(100/dv),Math.floor(999/dv)),n=dv*qt;
+    q.push(montar("Divisão",`Quanto é ${n} ÷ ${dv}?`,`Conta: ${n} ÷ ${dv} (divisão exata)`,qt,"",[qt+1,qt-1]));
+  }
+  // 15 divisões por 10, 100 e 1000
+  const ds=[10,100,1000];
+  for(let i=0;i<15;i++){
+    const dv=ds[i%3],k=rnd(2,99),n=k*dv;
+    q.push(montar("Divisão por 10, 100 ou 1000",`Quanto é ${n} ÷ ${dv}?`,`Dica: dividir por ${dv} = cortar ${String(dv).length-1} zero(s)`,k,"",[k*10,k+1]));
+  }
+  // 25 problemas de adição e subtração (estoque)
+  const itens=["refrigerantes","caixas de leite","camisetas","canetas","sacos de arroz","bolas","cadernos","pacotes de biscoito"];
+  for(let i=0;i<25;i++){
+    const it=itens[rnd(0,itens.length-1)];
+    const t=i%3;
+    if(t===0){
+      const c=rnd(20,90),v=rnd(5,c-5);
+      q.push(montar("Estoque",`Uma loja comprou ${c} ${it} e vendeu ${v}. Quantos ficaram em estoque?`,"Estoque = comprou − vendeu",c-v,"",[c+v]));
+    }else if(t===1){
+      const e=rnd(10,60),c=rnd(10,60),v=rnd(5,e+c-5);
+      q.push(montar("Estoque",`No estoque havia ${e} ${it}. Chegaram mais ${c} e foram vendidos ${v}. Quanto há agora?`,"Estoque = tinha + comprou − vendeu",e+c-v,"",[e+c,e-v>0?e-v:e+c+v]));
+    }else{
+      const e=rnd(50,120),v1=rnd(5,25),v2=rnd(5,25);
+      q.push(montar("Estoque",`Uma loja tinha ${e} ${it}. Vendeu ${v1} de manhã e ${v2} à tarde. Quantos restaram?`,"Estoque = tinha − vendas (some as vendas)",e-v1-v2,"",[e-v1,e+v1+v2]));
+    }
+  }
+  return emb(q);
+}
+ 
+let perguntas,atual,pontos,travado;
+const $=id=>document.getElementById(id);
+ 
+function iniciar(){
+  perguntas=gerar();atual=0;pontos=0;
+  $("fim").classList.add("oculto");$("jogo").classList.remove("oculto");
+  mostrar();
+}
+function mostrar(){
+  const q=perguntas[atual];travado=false;
+  $("num").textContent=`Questão ${atual+1}/100`;
+  $("pts").textContent=`Pontos: ${pontos}`;
+  $("prog").style.width=(atual/100*100)+"%";
+  $("tipo").textContent=q.tipo;
+  $("pergunta").textContent=q.texto;
+  $("dica").textContent=q.dica;
+  $("msg").textContent="";
+  $("cao").classList.remove("pula","erro");
+  $("prox").classList.add("oculto");
+  const box=$("opcoes");box.innerHTML="";
+  q.ops.forEach((o,i)=>{
+    const b=document.createElement("button");
+    b.className="op";b.textContent="ABC"[i]+") "+o;
+    b.onclick=()=>responder(i,b);
+    box.appendChild(b);
+  });
+}
+function responder(i,btn){
+  if(travado)return;travado=true;
+  const q=perguntas[atual],bs=document.querySelectorAll(".op");
+  bs.forEach(b=>b.disabled=true);
+  bs[q.certa].classList.add("certa");
+  if(i===q.certa){pontos++;$("msg").textContent="✅ Acertou!";$("msg").style.color="#2e7d32";
+    const c=$("cao");c.classList.remove("pula");void c.offsetWidth;c.classList.add("pula");
+    clearTimeout(window.tcao);window.tcao=setTimeout(()=>c.classList.remove("pula"),2100);}
+  else{btn.classList.add("errada");$("cao").classList.add("erro");$("msg").textContent="❌ Errou! A resposta certa era "+"ABC"[q.certa]+".";$("msg").style.color="#d00000"}
+  $("pts").textContent=`Pontos: ${pontos}`;
+  $("prox").textContent=atual===99?"Ver resultado":"Próxima ➜";
+  $("prox").classList.remove("oculto");
+}
+$("prox").onclick=()=>{
+  atual++;
+  if(atual>=100)fim();else mostrar();
+};
+function fim(){
+  $("jogo").classList.add("oculto");$("fim").classList.remove("oculto");
+  $("nota").textContent=`${pontos} / 100`;
+  $("aviso").textContent=pontos>=90?"🏆 Excelente!":pontos>=70?"👏 Muito bom!":pontos>=50?"🙂 Bom, continue treinando!":"📚 Revise as fórmulas e tente de novo!";
+}
+iniciar();
+</script>
+</body>
+</html>
+ 
